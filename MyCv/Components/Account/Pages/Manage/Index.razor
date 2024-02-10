@@ -24,9 +24,24 @@
                 <label for="username" class="form-label">Username</label>
             </div>
             <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.FullName" class="form-control" placeholder="Please enter your full name." />
+                <label for="name" class="form-label">Full Name</label>
+                <ValidationMessage For="() => Input.FullName" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.Address" class="form-control" placeholder="Please enter your address." />
+                <label for="address" class="form-label">Address</label>
+                <ValidationMessage For="() => Input.Address" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
                 <InputText @bind-Value="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number." />
                 <label for="phone-number" class="form-label">Phone number</label>
                 <ValidationMessage For="() => Input.PhoneNumber" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputDate @bind-Value="Input.DateOfBirth" class="form-control" placeholder="Please enter your date of birth." />
+                <label for="phone-number" class="form-label">Date Of Birth</label>
+                <ValidationMessage For="() => Input.DateOfBirth" class="text-danger" />
             </div>
             <button type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
         </EditForm>
@@ -51,16 +66,27 @@
         phoneNumber = await UserManager.GetPhoneNumberAsync(user);
 
         Input.PhoneNumber ??= phoneNumber;
+        Input.FullName ??= user.FullName;
+        Input.Address ??= user.Address;
+        Input.DateOfBirth ??= user.DateOfBirth;
+
     }
 
     private async Task OnValidSubmitAsync()
     {
+        user.FullName = Input.FullName;
+        user.Address = Input.Address;
+        user.PhoneNumber = Input.PhoneNumber;
+        user.DateOfBirth = Input.DateOfBirth;
+
+        var updateResult = await UserManager.UpdateAsync(user);
+
         if (Input.PhoneNumber != phoneNumber)
         {
             var setPhoneResult = await UserManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
             if (!setPhoneResult.Succeeded)
             {
-                RedirectManager.RedirectToCurrentPageWithStatus("Error: Failed to set phone number.", HttpContext);
+                RedirectManager.RedirectToCurrentPageWithStatus("Error: Failed to update user.", HttpContext);
             }
         }
 
@@ -70,8 +96,12 @@
 
     private sealed class InputModel
     {
+        public string FullName { get; set; }
+        public DateOnly? DateOfBirth { get; set; }
+        public string Address { get; set; }
         [Phone]
         [Display(Name = "Phone number")]
         public string? PhoneNumber { get; set; }
+
     }
 }
