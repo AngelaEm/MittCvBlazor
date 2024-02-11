@@ -27,16 +27,17 @@
 }
 
 :root {
-    /*--background-color: white;*/
-    --glass-color: rgba(255, 255, 255, 0.3);
+    --background-color: #f0eee8;
+    --glass-color: rgba(255, 255, 255, 0.6);
     --border-color: rgba(255, 255, 255, 0.18);
 }
 
 body {
-    /*background-color: var(--background-color);*/
+    background-color: var(--background-color);
     font-family: 'Open Sans', sans-serif;
-    
+    color: #42403b;
 }
+
 
 
 .glassmorphism {
@@ -78,10 +79,8 @@ body {
 }
 
 h1 {
-    font-size: 2.5rem;
     text-align: center;
     margin: 10px 0;
-    color: black;
     font-family: 'Kalnia', serif;
     font-weight:bold;
 }
@@ -142,7 +141,7 @@ table {
 }
 
 /* Större text på större skärmar */
-@media (min-width: 992px) {
+/*@media (min-width: 992px) {
     h1 {
         font-size: 2.5rem; 
     }
@@ -150,6 +149,25 @@ table {
     .table th, .table td {
         font-size: 16px; 
     }
+}*/
+
+.navigation-container {
+    position: fixed; 
+    top: 0; 
+    right: 0;
+    padding: 20px; 
+    z-index: 1000; 
 }
+
+.custom-link {
+    color: #800020; 
+    text-decoration: none; 
+    margin-left: 15px; 
+}
+
+    .custom-link:hover {
+        text-decoration: underline; 
+    }
+
 
 

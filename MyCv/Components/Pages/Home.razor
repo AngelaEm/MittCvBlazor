@@ -5,9 +5,13 @@
 @attribute [StreamRendering]
 
 <div class="container-fluid p-0">
-
     <img class="background-img" src="cvBackground.webp" />
-    <div class="d-flex flex-column justify-content-center align-items-center" style="background-color: #f0f0f0">
+    <div class="navigation-container">
+        <NavLink class="custom-link" href="Account/Login">Admin</NavLink>
+        <NavLink class="custom-link" href="Account/Register">Register</NavLink>
+    </div>
+
+    <div class="d-flex flex-column justify-content-center align-items-center" >
         <div class="glassmorphism">
             <h1>Angela Emanuelsson</h1>
             <h6>.NET Cloud Developer student</h6>
@@ -22,21 +26,22 @@
                     <h5>Contact Information</h5>
                     <h6 class="fw-bold">Name:</h6>
                     <p>Angela Emanuelsson</p>
-                    <h6 class="fw-bold">Mail</h6>
-                    <p>angela.emanuelsson@iths.se</p>
-                    <h6 class=" fw-bold">Phone:</h6>
+                    <h6 class="fw-bold">Mail:</h6>
+                    <a href="mailto:angela.emanuelsson@iths.se">angela.emanuelsson@iths.se</a>
+                    <h6 class=" fw-bold mt-3">Phone:</h6>
                     <p>0761898908</p>
 
                 </div>
             </div>
             <div class="social-links">
                 <a href="https://github.com/AngelaEm" target="_blank"><img src="gitHub.png" alt="GitHub" class="icon"></a>
-                <a href="https://www.linkedin.com/" target="_blank"><img src="linkedin.png" alt="LinkedIn" class="icon"></a>     
+                <a href="https://www.linkedin.com/in/angelaemanuelsson/" target="_blank"><img src="linkedin.png" alt="LinkedIn" class="icon"></a>
             </div>
         </div>
-        <div class="textruta glassmorphism">
+        <div class="textruta glassmorphism ms-5 me-5 mt-3 ps-3 pe-3">
+            <h5 style="font-weight:bold">About me</h5>
             <p>
-                Hello! I´m Angela,
+                Hello, I´m Angela!
                 With a solid background as a teacher and increasingly
                 more knowledge in .NET and cloud development, I am ready
                 for a new career in IT. My pedagogical experience has
@@ -110,28 +115,38 @@
 
    
         <!-- SkillTable -->
-    <div class="table-responsive glassmorphism mt-5">
-        <h2>My Skills</h2>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Technology</th>
-                    <th>YearsOfExperience</th>
-                    <th>SkillLevel</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var skill in skills)
-                {
+        <div class="table-responsive glassmorphism mt-5">
+            <h2>My Skills</h2>
+            <table class="table table-striped">
+                <thead>
                     <tr>
-                        <td>@skill.TechnologyName</td>
-                        <td>@skill.YearsOfExperience</td>
-                        <td>@skill.SkillLevel</td>
+                        <th>Technology</th>
+                        <th>Years of Experience</th>
+                        <th>Skill Level</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                    @foreach (var skill in skills)
+                    {
+                        <tr>
+                            <td>@skill.TechnologyName</td>
+                            <td>@skill.YearsOfExperience</td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar"
+                                         style="width: @skill.SkillLevel%; background-color: #800020;"
+                                         aria-valuenow="@skill.SkillLevel"
+                                         aria-valuemin="0" aria-valuemax="100">
+                                        @skill.SkillLevel%
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
 
     <!-- ProjectTable -->
     <div class="table-responsive glassmorphism mt-5 mb-5">
@@ -152,7 +167,7 @@
                         <td>@project.ProjectName</td>
                         <td>@project.Description</td>
                         <td>@project.TechnologiesUsed</td>
-                        <td>@project.ProjectLink</td>
+                        <td><a href="@project.ProjectLink">Click here</a></td>
                     </tr>
                 }
             </tbody>
