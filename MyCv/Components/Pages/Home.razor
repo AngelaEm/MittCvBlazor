@@ -1,7 +1,181 @@
-﻿@page "/"
+﻿
+@page "/"
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@attribute [StreamRendering]
 
-<PageTitle>Home</PageTitle>
+<div class="container-fluid p-0">
 
-<h1>Hello, world!</h1>
+    <img class="background-img" src="cvBackground.webp" />
+    <div class="d-flex flex-column justify-content-center align-items-center" style="background-color: #f0f0f0">
+        <div class="glassmorphism">
+            <h1>Angela Emanuelsson</h1>
+            <h6>.NET Cloud Developer student</h6>
+        </div>
+        <div class="glassmorphism">
+            
+            <div class="content">  
+                <div class="col-md-5 text-center">
+                    <img src="cv3.jpg" class="profile-image" alt="Min profilbild">
+                </div>
+                <div class=" col-md-7 contact-info">
+                    <h5>Contact Information</h5>
+                    <h6 class="fw-bold">Name:</h6>
+                    <p>Angela Emanuelsson</p>
+                    <h6 class="fw-bold">Mail</h6>
+                    <p>angela.emanuelsson@iths.se</p>
+                    <h6 class=" fw-bold">Phone:</h6>
+                    <p>0761898908</p>
 
-Welcome to your new app.
+                </div>
+            </div>
+            <div class="social-links">
+                <a href="https://github.com/AngelaEm" target="_blank"><img src="gitHub.png" alt="GitHub" class="icon"></a>
+                <a href="https://www.linkedin.com/" target="_blank"><img src="linkedin.png" alt="LinkedIn" class="icon"></a>     
+            </div>
+        </div>
+        <div class="textruta glassmorphism">
+            <p>
+                Hello! I´m Angela,
+                With a solid background as a teacher and increasingly
+                more knowledge in .NET and cloud development, I am ready
+                for a new career in IT. My pedagogical experience has
+                given me strengths such as creativity, flexibility, the
+                ability to structure, and the ability to collaborate well
+                with different people. These qualities, combined with my
+                new technical skills, make me believe that I am well-suited
+                for the IT industry. I am curious and quick to learn
+                and look forward to further developing within IT.
+            </p>
+        </div> 
+        <!-- EducationTable -->
+        <div class="table-responsive glassmorphism mt-5">
+            <h2>My Educations</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Education</th>
+                        <th>Institution</th>
+                        <th>StartDate</th>
+                        <th>EndDate</th>
+                        <th>Location</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var education in educations)
+                    {
+                        <tr>
+                            <td>@education.EducationName</td>
+                            <td>@education.InstitutionName</td>
+                            <td>@education.StartDate</td>
+                            <td>@education.EndDate</td>
+                            <td>@education.Location</td>
+                            <td>@education.Description</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- WorkExperienceTable -->
+        <div class="table-responsive glassmorphism mt-5">
+            <h2>My Workexperience</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Company</th>
+                        <th>Position</th>
+                        <th>StartDate</th>
+                        <th>EndDate</th>
+                        <th>Location</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var work in workExperience)
+                    {
+                        <tr>
+                            <td>@work.CompanyName</td>
+                            <td>@work.Position</td>
+                            <td>@work.StartDate</td>
+                            <td>@work.EndDate</td>
+                            <td>@work.Location</td>
+                            <td>@work.WorkDescription</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+   
+        <!-- SkillTable -->
+    <div class="table-responsive glassmorphism mt-5">
+        <h2>My Skills</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Technology</th>
+                    <th>YearsOfExperience</th>
+                    <th>SkillLevel</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var skill in skills)
+                {
+                    <tr>
+                        <td>@skill.TechnologyName</td>
+                        <td>@skill.YearsOfExperience</td>
+                        <td>@skill.SkillLevel</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ProjectTable -->
+    <div class="table-responsive glassmorphism mt-5 mb-5">
+        <h2>My Projects</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Technology</th>
+                    <th>Link</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var project in projects)
+                {
+                    <tr>
+                        <td>@project.ProjectName</td>
+                        <td>@project.Description</td>
+                        <td>@project.TechnologiesUsed</td>
+                        <td>@project.ProjectLink</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+
+
+
+@code{
+
+    private List<EducationModel> educations = new();
+    private List<WorkExperienceModel> workExperience = new();
+    private List<SkillModel> skills = new();
+    private List<ProjectModel> projects = new();
+
+    protected override async Task OnInitializedAsync() {
+
+        educations = await HttpClient.GetFromJsonAsync<List<EducationModel>>("/educations");
+        workExperience = await HttpClient.GetFromJsonAsync<List<WorkExperienceModel>>("/workExperience");
+        skills = await HttpClient.GetFromJsonAsync<List<SkillModel>>("/skills");
+        projects = await HttpClient.GetFromJsonAsync<List<ProjectModel>>("/projects");
+    }
+}
+
