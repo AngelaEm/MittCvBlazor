@@ -1,14 +1,32 @@
 ﻿
 @page "/"
+@using Microsoft.AspNetCore.Identity
+@using MyCv.Components.Account
+@using MyCv.Data
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @attribute [StreamRendering]
+@rendermode InteractiveServer
+@inject SignInManager<ApplicationUser> SignInManager
+
+
 
 <div class="container-fluid p-0">
     <img class="background-img" src="cvBackground.webp" />
     <div class="navigation-container">
         <NavLink class="custom-link" href="Account/Login">Admin</NavLink>
         <NavLink class="custom-link" href="Account/Register">Register</NavLink>
+        
+        <AuthorizeView>
+            <Authorized>
+                <NavLink class="custom-link" href="Account/Manage">Manage account</NavLink>
+                <NavLink class="custom-link" href="/Account/Logout">Log out</NavLink>
+            </Authorized>
+        </AuthorizeView>
+ 
+            <button @onclick="logout">Logout is nice</button>
+
+     
     </div>
 
     <div class="d-flex flex-column justify-content-center align-items-center" >
@@ -68,16 +86,23 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var education in educations)
+                    @if (educations != null)
                     {
-                        <tr>
-                            <td>@education.EducationName</td>
-                            <td>@education.InstitutionName</td>
-                            <td>@education.StartDate</td>
-                            <td>@education.EndDate</td>
-                            <td>@education.Location</td>
-                            <td>@education.Description</td>
-                        </tr>
+                        foreach (var education in educations)
+                            {
+                            <tr>
+                                <td>@education.EducationName</td>
+                                <td>@education.InstitutionName</td>
+                                <td>@education.StartDate</td>
+                                <td>@education.EndDate</td>
+                                <td>@education.Location</td>
+                                <td>@education.Description</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <p>No educations to show...</p>
                     }
                 </tbody>
             </table>
@@ -176,6 +201,21 @@
 </div>
 </div>
 
+@if (@authState != null)
+{
+    <p>@authState.User.Identity.Name</p>
+
+    @foreach (var claim in authState.User.Claims)
+    {
+        <p>Claim Type: @claim.Type</p>
+        <p>Claim Value: @claim.Value</p>
+    }
+}
+else
+{
+    <h1> not working </h1>
+
+}
 
 
 @code{
@@ -185,12 +225,28 @@
     private List<SkillModel> skills = new();
     private List<ProjectModel> projects = new();
 
-    protected override async Task OnInitializedAsync() {
+    [CascadingParameter]
+    private Task<AuthenticationState> _authState { get; set; }
 
+    private AuthenticationState authState { get; set; }
+
+
+
+    protected override async Task OnInitializedAsync() {
+        Console.WriteLine("test");
         educations = await HttpClient.GetFromJsonAsync<List<EducationModel>>("/educations");
         workExperience = await HttpClient.GetFromJsonAsync<List<WorkExperienceModel>>("/workExperience");
         skills = await HttpClient.GetFromJsonAsync<List<SkillModel>>("/skills");
         projects = await HttpClient.GetFromJsonAsync<List<ProjectModel>>("/projects");
+
+        authState = await _authState;
+
+    }
+
+
+
+    public async void logout(){
+        await SignInManager.SignOutAsync();
+        NavigationManager.NavigateTo("/ProjectPage");
     }
 }
-
