@@ -40,7 +40,7 @@ namespace MyCv.Services
 
         public async Task UpdateAsync(ProjectModel entity)
         {
-            var existingProject = await _context.Projects.FirstOrDefaultAsync(x => x.Id == entity.Id);
+            var existingProject = await _context.Projects.FindAsync(entity.Id);
             if (existingProject != null)
             {
                 _context.Entry(existingProject).CurrentValues.SetValues(entity);

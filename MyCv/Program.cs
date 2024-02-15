@@ -252,4 +252,6 @@ app.MapPut("/workExperience/{id:guid}", async (WorkExperienceModel workexperienc
     return Results.Ok("Successfully updated");
 });
 
+
+
 app.Run();

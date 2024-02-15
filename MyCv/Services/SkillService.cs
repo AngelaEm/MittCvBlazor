@@ -40,7 +40,7 @@ namespace MyCv.Services
 
         public async Task UpdateAsync(SkillModel entity)
         {
-            var skillToUpdate = await _context.Skills.FirstOrDefaultAsync(x => x.Id == entity.Id);
+            var skillToUpdate = await _context.Skills.FindAsync(entity.Id);
             if (skillToUpdate != null)
             {
                 _context.Entry(skillToUpdate).CurrentValues.SetValues(entity);

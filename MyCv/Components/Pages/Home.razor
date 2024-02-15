@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Identity
 @using MyCv.Components.Account
 @using MyCv.Data
+@using System.Text.Json
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @attribute [StreamRendering]
@@ -14,17 +15,21 @@
 <div class="container-fluid p-0">
     <img class="background-img" src="cvBackground.webp" />
     <div class="navigation-container">
-        <NavLink class="custom-link" href="Account/Login">Admin</NavLink>
+        <NavLink class="custom-link" href="Account/Login">Log In</NavLink>
         <NavLink class="custom-link" href="Account/Register">Register</NavLink>
         
         <AuthorizeView>
             <Authorized>
                 <NavLink class="custom-link" href="Account/Manage">Manage account</NavLink>
-                <NavLink class="custom-link" href="/Account/Logout">Log out</NavLink>
+                <form action="Account/Logout" method="post">
+                    <AntiforgeryToken/>
+                    <input type="hidden" name="ReturnUrl" value="@currentUrl"/>
+                    <button type="submit" class="nav-link custom-link">
+                        <span class="background-img bi-arrow-bar-left-nav-menu" aria-hidden="true"></span>Logout
+                    </button>
+                </form>
             </Authorized>
         </AuthorizeView>
- 
-            <button @onclick="logout">Logout is nice</button>
 
      
     </div>
@@ -198,9 +203,13 @@
             </tbody>
         </table>
     </div>
-</div>
+    <div class="glassmorphism">
+        <h1>@advice</h1>
+    </div>
 </div>
 
+</div>
+@*
 @if (@authState != null)
 {
     <p>@authState.User.Identity.Name</p>
@@ -216,7 +225,7 @@ else
     <h1> not working </h1>
 
 }
-
+ *@
 
 @code{
 
@@ -230,23 +239,33 @@ else
 
     private AuthenticationState authState { get; set; }
 
+    private string currentUrl = string.Empty;
 
+    private string advice = string.Empty;
 
     protected override async Task OnInitializedAsync() {
-        Console.WriteLine("test");
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         educations = await HttpClient.GetFromJsonAsync<List<EducationModel>>("/educations");
         workExperience = await HttpClient.GetFromJsonAsync<List<WorkExperienceModel>>("/workExperience");
         skills = await HttpClient.GetFromJsonAsync<List<SkillModel>>("/skills");
         projects = await HttpClient.GetFromJsonAsync<List<ProjectModel>>("/projects");
 
+        try
+        {
+            var response = await HttpClient.GetStringAsync("https://api.adviceslip.com/advice");
+            using (var doc = JsonDocument.Parse(response))
+            {
+                advice = doc.RootElement.GetProperty("slip").GetProperty("advice").GetString();
+            }
+        }
+        catch (BadHttpRequestException e)
+        {
+            
+            Console.WriteLine(e.Message); ;
+        }
+        
+
         authState = await _authState;
 
-    }
-
-
-
-    public async void logout(){
-        await SignInManager.SignOutAsync();
-        NavigationManager.NavigateTo("/ProjectPage");
     }
 }

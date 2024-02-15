@@ -1,0 +1,108 @@
+﻿@page "/Account/Manage/Educations"
+@inject HttpClient HttpClient
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+
+<NavLink class="custom-link ms-0" href="/">Home</NavLink>
+<NavLink class="custom-link" href="/Account/Manage">Manage Account</NavLink>
+
+<h3>Educations</h3>
+
+<EditForm Model="@newEducation" OnValidSubmit="@HandleValidSubmit" FormName="EducationForm">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+    <div>
+        <label class="form-label">Choose Education:</label>
+        <select class="form-control" value="@newEducation" @onchange="OnEducationSelected">
+            <option value="addNew"></option>
+            @foreach(var education in educations)
+            {
+                <option value="@education.Id">@education.InstitutionName</option>
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="InstitutionName">Institution:</label>
+        <InputText id="institutionName" class="form-control" @bind-Value="newEducation.InstitutionName" />
+    </div>
+    <div class="form-group">
+        <label for="EducationName">Education Name:</label>
+        <InputText id="EducationName" class="form-control" @bind-Value="newEducation.EducationName" />
+    </div>
+    <div class="form-group">
+        <label for="StartDate">StartDate:</label>
+        <InputDate id="startDate" class="form-control" @bind-Value="newEducation.StartDate"/>
+    </div>
+    <div class="form-group">
+        <label for="EndDate">EndDate:</label>
+        <InputDate id="endDate" class="form-control" @bind-Value="newEducation.EndDate"/>
+    </div>
+    <div class="form-group">
+        <label for="Location">Location:</label>
+        <InputText id="location" class="form-control" @bind-Value="newEducation.Location"/>
+    </div>
+    <div class="form-group">
+        <label for="Description">Description:</label>
+        <InputTextArea id="description" class="form-control" @bind-Value="newEducation.Description"/>
+    </div>
+
+    <button type="submit" class="btn btn-success">Submit</button>
+    <button type="button" class="btn btn-danger" @onclick="DeleteEducation">Delete</button>
+
+</EditForm>
+
+@code{
+    private EducationModel newEducation = new();
+    private List<EducationModel> educations = new();
+
+    protected override async Task OnInitializedAsync() 
+    {
+        educations = await HttpClient.GetFromJsonAsync<List<EducationModel>>("/educations");
+    }
+
+    private async Task OnEducationSelected(ChangeEventArgs e)
+    {
+        var educationId = e.Value.ToString();
+        if (string.IsNullOrEmpty(educationId))
+        {
+            newEducation = new EducationModel();
+        }
+        else
+        {
+            newEducation = await HttpClient.GetFromJsonAsync<EducationModel>($"educations/{educationId}");
+
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        HttpResponseMessage response;
+        if (newEducation.Id == Guid.Empty)
+        {
+            response = await HttpClient.PostAsJsonAsync("educations", newEducation);
+
+        }
+        else
+        {
+            response = await HttpClient.PutAsJsonAsync($"educations/{newEducation.Id}", newEducation);
+        }
+
+        educations = await HttpClient.GetFromJsonAsync<List<EducationModel>>("/educations");
+        newEducation = new EducationModel();
+    }
+
+    
+
+    private async Task DeleteEducation()
+    {
+        if (newEducation != null && newEducation.Id != Guid.Empty)
+        {
+            var response = await HttpClient.DeleteAsync($"educations/{newEducation.Id}");
+            educations = await HttpClient.GetFromJsonAsync<List<EducationModel>>("/educations");
+            newEducation = new EducationModel();
+
+        }
+
+    }
+
+}

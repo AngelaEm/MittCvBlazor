@@ -42,7 +42,7 @@ namespace MyCv.Services
 
         public async Task UpdateAsync(EducationModel entity)
         {
-            var existingEntity = await _context.Educations.FindAsync();
+            var existingEntity = await _context.Educations.FindAsync(entity.Id);
             if (existingEntity != null)
             {
                 _context.Entry(existingEntity).CurrentValues.SetValues(entity);

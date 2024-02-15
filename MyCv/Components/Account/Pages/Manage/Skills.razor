@@ -1,0 +1,102 @@
+﻿@page "/Account/Manage/Skills"
+@inject HttpClient HttpClient
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+
+
+<NavLink class="custom-link ms-0" href="/">Home</NavLink>
+<NavLink class="custom-link" href="/Account/Manage">Manage Account</NavLink>
+
+<h3>Skills</h3>
+
+<EditForm Model="@newSkill" OnValidSubmit="@HandleValidSubmit" FormName="ProjectForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div>
+        <label class="form-label">Choose Skill:</label>
+        <select class="form-control" value="@newSkill" @onchange="OnSkillSelected">
+            <option value="addNew"></option>
+            @foreach (var skill in skills)
+            {
+                <option value="@skill.Id">@skill.TechnologyName</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="TechnologyName">Technology:</label>
+        <InputText id="Technology" class="form-control" @bind-Value="newSkill.TechnologyName" />
+    </div>
+
+    <div class="form-group">
+        <label for="YearsOfExperience">Years of experience:</label>
+        <InputNumber id="YearsOfExperience" class="form-control" @bind-Value="newSkill.YearsOfExperience" />
+    </div>
+
+    <div class="form-group">
+        <label for="SkillLevel">Skill Level:</label>
+        <InputNumber id="SkillLevel" class="form-control" @bind-Value="newSkill.SkillLevel" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Submit</button>
+    <button type="button" class="btn btn-danger" @onclick="DeleteProject">Delete</button>
+
+</EditForm>
+
+@code {
+
+    public SkillModel? newSkill = new();
+    private List<SkillModel> skills = new();
+
+    private string errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        skills = await HttpClient.GetFromJsonAsync<List<SkillModel>>("/skills");
+
+    }
+
+    private async Task OnSkillSelected(ChangeEventArgs e)
+    {
+        var skillId = e.Value.ToString();
+        if (string.IsNullOrEmpty(skillId))
+        {
+            newSkill = new SkillModel();
+        }
+        else
+        {
+            newSkill = await HttpClient.GetFromJsonAsync<SkillModel>($"skills/{skillId}");
+
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        HttpResponseMessage response;
+        if (newSkill.Id == Guid.Empty)
+        {
+            response = await HttpClient.PostAsJsonAsync("skills", newSkill);
+
+        }
+        else
+        {
+            response = await HttpClient.PutAsJsonAsync($"skills/{newSkill.Id}", newSkill);
+        }
+
+        skills = await HttpClient.GetFromJsonAsync<List<SkillModel>>("/skills");
+        newSkill = new SkillModel();
+
+    }
+
+    private async Task DeleteProject()
+    {
+        if (newSkill != null && newSkill.Id != Guid.Empty)
+        {
+            var response = await HttpClient.DeleteAsync($"skills/{newSkill.Id}");
+            skills = await HttpClient.GetFromJsonAsync<List<SkillModel>>("/skills");
+            newSkill = new SkillModel();
+
+        }
+    }
+}

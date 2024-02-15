@@ -1,0 +1,108 @@
+﻿@page "/Account/Manage/WorkExperience"
+@inject HttpClient HttpClient
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+
+
+<NavLink class="custom-link ms-0" href="/">Home</NavLink>
+<NavLink class="custom-link" href="/Account/Manage">Manage Account</NavLink>
+<h3>WorkExperience</h3>
+
+<EditForm Model="@newWorkExperience" OnValidSubmit="@HandleValidSubmit" FormName="EducationForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div>
+        <label class="form-label">Choose WorkExperience:</label>
+        <select class="form-control" value="@newWorkExperience" @onchange="OnWorkExperienceSelected">
+            <option value="addNew"></option>
+            @foreach (var experience in workExperience)
+            {
+                <option value="@experience.Id">@experience.CompanyName</option>
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="CompanyName">Company:</label>
+        <InputText id="companyName" class="form-control" @bind-Value="newWorkExperience.CompanyName" />
+    </div>
+    <div class="form-group">
+        <label for="Position">Position:</label>
+        <InputText id="Position" class="form-control" @bind-Value="newWorkExperience.Position" />
+    </div>
+    <div class="form-group">
+        <label for="StartDate">StartDate:</label>
+        <InputDate id="startDate" class="form-control" @bind-Value="newWorkExperience.StartDate" />
+    </div>
+    <div class="form-group">
+        <label for="EndDate">EndDate:</label>
+        <InputDate id="endDate" class="form-control" @bind-Value="newWorkExperience.EndDate" />
+    </div>
+    <div class="form-group">
+        <label for="Location">Location:</label>
+        <InputText id="location" class="form-control" @bind-Value="newWorkExperience.Location" />
+    </div>
+    <div class="form-group">
+        <label for="WorkDescription">Description:</label>
+        <InputTextArea id="workDescription" class="form-control" @bind-Value="newWorkExperience.WorkDescription" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Submit</button>
+    <button type="button" class="btn btn-danger" @onclick="DeleteWorkExperience">Delete</button>
+
+</EditForm>
+
+@code {
+    private WorkExperienceModel newWorkExperience = new();
+    private List<WorkExperienceModel> workExperience = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        workExperience = await HttpClient.GetFromJsonAsync<List<WorkExperienceModel>>("/workExperience");
+    }
+
+    private async Task OnWorkExperienceSelected(ChangeEventArgs e)
+    {
+        var workExperienceId = e.Value.ToString();
+        if (string.IsNullOrEmpty(workExperienceId))
+        {
+            newWorkExperience = new WorkExperienceModel();
+        }
+        else
+        {
+            newWorkExperience = await HttpClient.GetFromJsonAsync<WorkExperienceModel>($"workExperience/{workExperienceId}");
+
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        HttpResponseMessage response;
+        if (newWorkExperience.Id == Guid.Empty)
+        {
+            response = await HttpClient.PostAsJsonAsync("workExperience", newWorkExperience);
+
+        }
+        else
+        {
+            response = await HttpClient.PutAsJsonAsync($"workExperience/{newWorkExperience.Id}", newWorkExperience);
+        }
+
+        workExperience = await HttpClient.GetFromJsonAsync<List<WorkExperienceModel>>("/workExperience");
+        newWorkExperience = new WorkExperienceModel();
+    }
+
+
+
+    private async Task DeleteWorkExperience()
+    {
+        if (newWorkExperience != null && newWorkExperience.Id != Guid.Empty)
+        {
+            var response = await HttpClient.DeleteAsync($"workExperience/{newWorkExperience.Id}");
+            workExperience = await HttpClient.GetFromJsonAsync<List<WorkExperienceModel>>("/workExperience");
+            newWorkExperience = new WorkExperienceModel();
+
+        }
+
+    }
+
+}
