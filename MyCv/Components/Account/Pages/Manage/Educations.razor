@@ -1,5 +1,7 @@
 ﻿@page "/Account/Manage/Educations"
-@inject HttpClient HttpClient
+@using Common.Models
+@using Common.Interfaces
+@inject IEducationService EducationService
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 
@@ -57,37 +59,42 @@
 
     protected override async Task OnInitializedAsync() 
     {
-        educations = await HttpClient.GetFromJsonAsync<List<EducationModel>>("/educations");
+
+	    educations.AddRange(await EducationService.GetAllAsync());
     }
 
     private async Task OnEducationSelected(ChangeEventArgs e)
     {
-        var educationId = e.Value.ToString();
-        if (string.IsNullOrEmpty(educationId))
-        {
-            newEducation = new EducationModel();
-        }
-        else
-        {
-            newEducation = await HttpClient.GetFromJsonAsync<EducationModel>($"educations/{educationId}");
-
-        }
+	    Guid.TryParse(e.Value?.ToString(), out Guid educationId);
+    
+	    if (educationId == Guid.Empty)
+	    {
+		    newEducation = new EducationModel();
+	    }
+	    else
+	    {
+		    
+		    newEducation = await EducationService.GetByIdAsync(educationId);
+	    }
     }
+
 
     private async Task HandleValidSubmit()
     {
-        HttpResponseMessage response;
+       
         if (newEducation.Id == Guid.Empty)
         {
-            response = await HttpClient.PostAsJsonAsync("educations", newEducation);
+	        await EducationService.AddAsync(newEducation);
 
         }
         else
         {
-            response = await HttpClient.PutAsJsonAsync($"educations/{newEducation.Id}", newEducation);
+	        await EducationService.UpdateAsync(newEducation);
+            
         }
 
-        educations = await HttpClient.GetFromJsonAsync<List<EducationModel>>("/educations");
+        educations.Clear();
+        educations.AddRange(await EducationService.GetAllAsync());
         newEducation = new EducationModel();
     }
 
@@ -97,8 +104,9 @@
     {
         if (newEducation != null && newEducation.Id != Guid.Empty)
         {
-            var response = await HttpClient.DeleteAsync($"educations/{newEducation.Id}");
-            educations = await HttpClient.GetFromJsonAsync<List<EducationModel>>("/educations");
+	        await EducationService.DeleteAsync(newEducation.Id);
+	        educations.Clear();
+	        educations.AddRange(await EducationService.GetAllAsync());
             newEducation = new EducationModel();
 
         }

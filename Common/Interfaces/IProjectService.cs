@@ -1,7 +1,6 @@
-﻿using MyCv.Interfaces;
-using MyCv.Models;
+﻿using Common.Models;
 
-namespace MyCv.Services.Interfaces
+namespace Common.Interfaces
 {
     public interface IProjectService : IRepository<ProjectModel>
     {

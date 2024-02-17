@@ -1,7 +1,10 @@
 ﻿@page "/Account/Manage/WorkExperience"
+@using Common.Models
+@using Common.Interfaces
 @inject HttpClient HttpClient
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
+@inject IWorkExperienceService WorkExperienceService
 
 
 <NavLink class="custom-link ms-0" href="/">Home</NavLink>
@@ -55,53 +58,59 @@
     private WorkExperienceModel newWorkExperience = new();
     private List<WorkExperienceModel> workExperience = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() 
     {
-        workExperience = await HttpClient.GetFromJsonAsync<List<WorkExperienceModel>>("/workExperience");
+
+	    workExperience.AddRange(await WorkExperienceService.GetAllAsync());
     }
 
     private async Task OnWorkExperienceSelected(ChangeEventArgs e)
     {
-        var workExperienceId = e.Value.ToString();
-        if (string.IsNullOrEmpty(workExperienceId))
-        {
-            newWorkExperience = new WorkExperienceModel();
-        }
-        else
-        {
-            newWorkExperience = await HttpClient.GetFromJsonAsync<WorkExperienceModel>($"workExperience/{workExperienceId}");
-
-        }
+	    Guid.TryParse(e.Value?.ToString(), out Guid workId);
+    
+	    if (workId == Guid.Empty)
+	    {
+		    newWorkExperience = new WorkExperienceModel();
+	    }
+	    else
+	    {
+		    
+		    newWorkExperience = await WorkExperienceService.GetByIdAsync(workId);
+	    }
     }
+
 
     private async Task HandleValidSubmit()
     {
-        HttpResponseMessage response;
-        if (newWorkExperience.Id == Guid.Empty)
-        {
-            response = await HttpClient.PostAsJsonAsync("workExperience", newWorkExperience);
+       
+	    if (newWorkExperience.Id == Guid.Empty)
+	    {
+		    await WorkExperienceService.AddAsync(newWorkExperience);
 
-        }
-        else
-        {
-            response = await HttpClient.PutAsJsonAsync($"workExperience/{newWorkExperience.Id}", newWorkExperience);
-        }
+	    }
+	    else
+	    {
+		    await WorkExperienceService.UpdateAsync(newWorkExperience);
+            
+	    }
 
-        workExperience = await HttpClient.GetFromJsonAsync<List<WorkExperienceModel>>("/workExperience");
-        newWorkExperience = new WorkExperienceModel();
+	    workExperience.Clear();
+        workExperience.AddRange(await WorkExperienceService.GetAllAsync());
+	    newWorkExperience = new WorkExperienceModel();
     }
 
-
+    
 
     private async Task DeleteWorkExperience()
     {
         if (newWorkExperience != null && newWorkExperience.Id != Guid.Empty)
-        {
-            var response = await HttpClient.DeleteAsync($"workExperience/{newWorkExperience.Id}");
-            workExperience = await HttpClient.GetFromJsonAsync<List<WorkExperienceModel>>("/workExperience");
+	    {
+            await WorkExperienceService.DeleteAsync(newWorkExperience.Id);
+            workExperience.Clear();
+            workExperience.AddRange(await WorkExperienceService.GetAllAsync());
             newWorkExperience = new WorkExperienceModel();
 
-        }
+	    }
 
     }
 

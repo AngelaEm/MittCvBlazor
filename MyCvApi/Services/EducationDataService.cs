@@ -1,15 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MyCv.Data;
-using MyCv.Models;
-using MyCv.Services.Interfaces;
+﻿using Common.Interfaces;
+using Common.Models;
+using Microsoft.EntityFrameworkCore;
+using MyCvApi.Data;
 
-namespace MyCv.Services
+namespace MyCvApi.Services
 {
-    public class EducationService : IEducationService
+    public class EducationDataService : IEducationService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApiDbContext _context;
 
-        public EducationService(ApplicationDbContext context)
+        public EducationDataService(ApiDbContext context)
         {
             _context = context;
         }
@@ -27,7 +27,7 @@ namespace MyCv.Services
 
         public async Task DeleteAsync(Guid id)
         {
-            var entity = await _context.Educations.FindAsync(id);
+            var entity = await _context.Educations.FirstOrDefaultAsync(x => x.Id == id);
             if (entity != null)
             {
                 _context.Educations.Remove(entity);

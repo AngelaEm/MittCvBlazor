@@ -1,7 +1,10 @@
 ﻿@page "/Account/Manage/Skills"
+@using Common.Models
+@using Common.Interfaces
 @inject HttpClient HttpClient
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
+@inject ISkillService SkillService
 
 
 <NavLink class="custom-link ms-0" href="/">Home</NavLink>
@@ -39,7 +42,7 @@
     </div>
 
     <button type="submit" class="btn btn-success">Submit</button>
-    <button type="button" class="btn btn-danger" @onclick="DeleteProject">Delete</button>
+    <button type="button" class="btn btn-danger" @onclick="DeleteSkill">Delete</button>
 
 </EditForm>
 
@@ -48,55 +51,59 @@
     public SkillModel? newSkill = new();
     private List<SkillModel> skills = new();
 
-    private string errorMessage;
-
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() 
     {
 
-        skills = await HttpClient.GetFromJsonAsync<List<SkillModel>>("/skills");
-
+	    skills.AddRange(await SkillService.GetAllAsync());
     }
 
     private async Task OnSkillSelected(ChangeEventArgs e)
     {
-        var skillId = e.Value.ToString();
-        if (string.IsNullOrEmpty(skillId))
-        {
-            newSkill = new SkillModel();
-        }
-        else
-        {
-            newSkill = await HttpClient.GetFromJsonAsync<SkillModel>($"skills/{skillId}");
-
-        }
+	    Guid.TryParse(e.Value?.ToString(), out Guid educationId);
+    
+	    if (educationId == Guid.Empty)
+	    {
+		    newSkill = new SkillModel();
+	    }
+	    else
+	    {
+		    
+		    newSkill = await SkillService.GetByIdAsync(educationId);
+	    }
     }
+
 
     private async Task HandleValidSubmit()
     {
-        HttpResponseMessage response;
-        if (newSkill.Id == Guid.Empty)
-        {
-            response = await HttpClient.PostAsJsonAsync("skills", newSkill);
+       
+	    if (newSkill.Id == Guid.Empty)
+	    {
+		    await SkillService.AddAsync(newSkill);
 
-        }
-        else
-        {
-            response = await HttpClient.PutAsJsonAsync($"skills/{newSkill.Id}", newSkill);
-        }
+	    }
+	    else
+	    {
+		    await SkillService.UpdateAsync(newSkill);
+            
+	    }
 
-        skills = await HttpClient.GetFromJsonAsync<List<SkillModel>>("/skills");
-        newSkill = new SkillModel();
-
+	    skills.Clear();
+	    skills.AddRange(await SkillService.GetAllAsync());
+	    newSkill = new SkillModel();
     }
 
-    private async Task DeleteProject()
-    {
-        if (newSkill != null && newSkill.Id != Guid.Empty)
-        {
-            var response = await HttpClient.DeleteAsync($"skills/{newSkill.Id}");
-            skills = await HttpClient.GetFromJsonAsync<List<SkillModel>>("/skills");
-            newSkill = new SkillModel();
+    
 
-        }
+    private async Task DeleteSkill()
+    {
+	    if (newSkill != null && newSkill.Id != Guid.Empty)
+	    {
+		    await SkillService.DeleteAsync(newSkill.Id);
+		    skills.Clear();
+		    skills.AddRange(await SkillService.GetAllAsync());
+		    newSkill = new SkillModel();
+
+	    }
+
     }
 }

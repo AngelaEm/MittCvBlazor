@@ -1,15 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MyCv.Data;
-using MyCv.Models;
-using MyCv.Services.Interfaces;
+﻿using Common.Interfaces;
+using Common.Models;
+using Microsoft.EntityFrameworkCore;
+using MyCvApi.Data;
 
-namespace MyCv.Services
+namespace MyCvApi.Services
 {
-    public class ProjectService : IProjectService
+    public class ProjectDataService : IProjectService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApiDbContext _context;
 
-        public ProjectService(ApplicationDbContext context)
+        public ProjectDataService(ApiDbContext context)
         {
             _context = context;
         }
@@ -30,7 +30,7 @@ namespace MyCv.Services
 
         public async Task DeleteAsync(Guid id)
         {
-            var entity = await _context.Projects.FindAsync(id);
+            var entity = await _context.Projects.FirstOrDefaultAsync(x => x.Id == id);
             if (entity != null)
             {
                 _context.Projects.Remove(entity);
@@ -40,7 +40,7 @@ namespace MyCv.Services
 
         public async Task UpdateAsync(ProjectModel entity)
         {
-            var existingProject = await _context.Projects.FindAsync(entity.Id);
+            var existingProject = await _context.Projects.FirstOrDefaultAsync(x => x.Id == entity.Id);
             if (existingProject != null)
             {
                 _context.Entry(existingProject).CurrentValues.SetValues(entity);

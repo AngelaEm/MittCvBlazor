@@ -1,14 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MyCv.Data;
-using MyCv.Models;
-using MyCv.Services.Interfaces;
+﻿using Common.Interfaces;
+using Common.Models;
+using Microsoft.EntityFrameworkCore;
+using MyCvApi.Data;
 
-namespace MyCv.Services
+namespace MyCvApi.Services
 {
-    public class SkillService : ISkillService
+    public class SkillDataService : ISkillService
     {
-        public readonly ApplicationDbContext _context;
-        public SkillService(ApplicationDbContext context)
+        public readonly ApiDbContext _context;
+        public SkillDataService(ApiDbContext context)
         {
             _context = context;
         }

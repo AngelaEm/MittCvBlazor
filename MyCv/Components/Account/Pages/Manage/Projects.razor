@@ -1,5 +1,7 @@
 ﻿@page "/Account/Manage/Projects"
-@inject HttpClient HttpClient
+@using Common.Models
+@using Common.Interfaces
+@inject IProjectService ProjectService
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 
@@ -52,55 +54,59 @@
     public ProjectModel? newProject = new();
     private List<ProjectModel> projects = new();
 
-    private string errorMessage;
-
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() 
     {
 
-        projects = await HttpClient.GetFromJsonAsync<List<ProjectModel>>("/projects");
-
+	    projects.AddRange(await ProjectService.GetAllAsync());
     }
 
     private async Task OnProjectSelected(ChangeEventArgs e)
     {
-        var projectId = e.Value.ToString();
-        if (string.IsNullOrEmpty(projectId))
-        {
-            newProject = new ProjectModel();
-        }
-        else
-        {
-            newProject = await HttpClient.GetFromJsonAsync<ProjectModel>($"projects/{projectId}");
-
-        }
+	    Guid.TryParse(e.Value?.ToString(), out Guid educationId);
+    
+	    if (educationId == Guid.Empty)
+	    {
+		    newProject = new ProjectModel();
+	    }
+	    else
+	    {
+		    
+            newProject = await ProjectService.GetByIdAsync(educationId);
+	    }
     }
+
 
     private async Task HandleValidSubmit()
     {
-        HttpResponseMessage response;
+       
         if (newProject.Id == Guid.Empty)
-        {
-            response = await HttpClient.PostAsJsonAsync("projects", newProject);
+	    {
+		    await ProjectService.AddAsync(newProject);
+
+	    }
+	    else
+	    {
+		    await ProjectService.UpdateAsync(newProject);
             
-        }
-        else
-        {
-            response = await HttpClient.PutAsJsonAsync($"projects/{newProject.Id}", newProject);
-        }
-            
-        projects = await HttpClient.GetFromJsonAsync<List<ProjectModel>>("/projects");
+	    }
+
+        projects.Clear();
+        projects.AddRange(await ProjectService.GetAllAsync());
         newProject = new ProjectModel();
-        
     }
+
+    
 
     private async Task DeleteProject()
     {
         if (newProject != null && newProject.Id != Guid.Empty)
-        {
-            var response = await HttpClient.DeleteAsync($"projects/{newProject.Id}");
-            projects = await HttpClient.GetFromJsonAsync<List<ProjectModel>>("/projects");
+	    {
+            await ProjectService.DeleteAsync(newProject.Id);
+            projects.Clear();
+            projects.AddRange(await ProjectService.GetAllAsync());
             newProject = new ProjectModel();
-            
-        }
+
+	    }
+
     }
 }

@@ -1,15 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MyCv.Data;
-using MyCv.Models;
-using MyCv.Services.Interfaces;
+﻿using Common.Interfaces;
+using Common.Models;
+using Microsoft.EntityFrameworkCore;
+using MyCvApi.Data;
 
-namespace MyCv.Services
+namespace MyCvApi.Services
 {
-    public class WorkExperienceService : IWorkExperienceService
+    public class WorkExperienceDataService : IWorkExperienceService
     {
-        public readonly ApplicationDbContext _context;
+        public readonly ApiDbContext _context;
 
-        public WorkExperienceService(ApplicationDbContext context)
+        public WorkExperienceDataService(ApiDbContext context)
         {
             _context = context;
         }

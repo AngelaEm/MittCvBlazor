@@ -1,4 +1,4 @@
-﻿namespace MyCv.Models
+﻿namespace Common.Models
 {
     public class EducationModel
     {

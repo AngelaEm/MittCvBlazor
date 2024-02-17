@@ -4,11 +4,21 @@
 @using MyCv.Components.Account
 @using MyCv.Data
 @using System.Text.Json
-@inject HttpClient HttpClient
+@using Common.Interfaces
+@using Common.Models
+@using MyCv.Services
+@inject IEducationService EducationService
+@inject IWorkExperienceService WorkService
+@inject IProjectService ProjectService
+@inject ISkillService SkillService
+@inject AdviceClient Client
+@inject AdviceModel AdviceModel
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthStateProvider
 @attribute [StreamRendering]
 @rendermode InteractiveServer
 @inject SignInManager<ApplicationUser> SignInManager
+
 
 
 
@@ -19,13 +29,13 @@
         <NavLink class="custom-link" href="Account/Register">Register</NavLink>
         
         <AuthorizeView>
-            <Authorized>
+            <Authorized> 
                 <NavLink class="custom-link" href="Account/Manage">Manage account</NavLink>
-                <form action="Account/Logout" method="post">
+                <form action="Account/Logout" method="post" class="d-inline">
                     <AntiforgeryToken/>
                     <input type="hidden" name="ReturnUrl" value="@currentUrl"/>
-                    <button type="submit" class="nav-link custom-link">
-                        <span class="background-img bi-arrow-bar-left-nav-menu" aria-hidden="true"></span>Logout
+                    <button type="submit" class="btn btn-link custom-link p-0">
+                        Logout
                     </button>
                 </form>
             </Authorized>
@@ -204,68 +214,37 @@
         </table>
     </div>
     <div class="glassmorphism">
-        <h1>@advice</h1>
+        <h1>@AdviceModel.Slip.Advice</h1>
     </div>
 </div>
 
-</div>
-@*
-@if (@authState != null)
-{
-    <p>@authState.User.Identity.Name</p>
-
-    @foreach (var claim in authState.User.Claims)
-    {
-        <p>Claim Type: @claim.Type</p>
-        <p>Claim Value: @claim.Value</p>
-    }
-}
-else
-{
-    <h1> not working </h1>
-
-}
- *@
+</div
 
 @code{
 
-    private List<EducationModel> educations = new();
-    private List<WorkExperienceModel> workExperience = new();
-    private List<SkillModel> skills = new();
-    private List<ProjectModel> projects = new();
+	private List<EducationModel> educations = new();
+	private List<WorkExperienceModel> workExperience = new();
+	private List<SkillModel> skills = new();
+	private List<ProjectModel> projects = new();
 
-    [CascadingParameter]
-    private Task<AuthenticationState> _authState { get; set; }
+	
 
-    private AuthenticationState authState { get; set; }
 
-    private string currentUrl = string.Empty;
+	private string currentUrl = string.Empty;
 
-    private string advice = string.Empty;
 
-    protected override async Task OnInitializedAsync() {
-        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        educations = await HttpClient.GetFromJsonAsync<List<EducationModel>>("/educations");
-        workExperience = await HttpClient.GetFromJsonAsync<List<WorkExperienceModel>>("/workExperience");
-        skills = await HttpClient.GetFromJsonAsync<List<SkillModel>>("/skills");
-        projects = await HttpClient.GetFromJsonAsync<List<ProjectModel>>("/projects");
+	protected override async Task OnInitializedAsync()
+	{
+		currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+		educations.AddRange(await EducationService.GetAllAsync());
+		workExperience.AddRange(await WorkService.GetAllAsync());
+		projects.AddRange(await ProjectService.GetAllAsync());
+		skills.AddRange(await SkillService.GetAllAsync());
 
-        try
-        {
-            var response = await HttpClient.GetStringAsync("https://api.adviceslip.com/advice");
-            using (var doc = JsonDocument.Parse(response))
-            {
-                advice = doc.RootElement.GetProperty("slip").GetProperty("advice").GetString();
-            }
-        }
-        catch (BadHttpRequestException e)
-        {
-            
-            Console.WriteLine(e.Message); ;
-        }
-        
+		AdviceModel = await Client.GetAsync();
 
-        authState = await _authState;
 
-    }
+	}
+
+	
 }
