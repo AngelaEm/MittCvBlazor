@@ -11,34 +11,65 @@ public class WorkExperiensServiceClient : IWorkExperienceService
     {
         _httpClient = clientFactory.CreateClient("mittApi");
     }
-
-    public async Task AddAsync(WorkExperienceModel entity)
+    public async Task<IEnumerable<WorkExperienceModel>> GetAllAsync()
     {
-        await _httpClient.PostAsJsonAsync("workExperience", entity);
+	    try
+	    {
+		    var response = await _httpClient.GetFromJsonAsync<List<WorkExperienceModel>>("/workExperience");
+		    return response;
+		}
+	    catch (Exception e)
+	    {
+		    Console.WriteLine(e.Message);
+		    return new List<WorkExperienceModel>();
+	    }
+    }
+    public async Task<WorkExperienceModel> GetByIdAsync(Guid id)
+    {
+	    try
+	    {
+		    var response = await _httpClient.GetFromJsonAsync<WorkExperienceModel>($"workExperience/{id}");
+		    return response;
+		}
+	    catch (Exception e)
+	    {
+		    Console.WriteLine(e.Message);
+		    return new WorkExperienceModel();
+	    }
+    }
+	public async Task AddAsync(WorkExperienceModel entity)
+    {
+	    try
+	    {
+		    await _httpClient.PostAsJsonAsync("workExperience", entity);
+		}
+	    catch (Exception e)
+	    {
+		    Console.WriteLine(e.Message);
+	    }
     }
 
     public async Task DeleteAsync(Guid id)
     {
-        await _httpClient.DeleteAsync($"workExperience/{id}");
-    }
-
-    public async Task<IEnumerable<WorkExperienceModel>> GetAllAsync()
-    {
-        var response = await _httpClient.GetFromJsonAsync<List<WorkExperienceModel>>("/workExperience");
-        return response;
-    }
-
-
-    public async Task<WorkExperienceModel> GetByIdAsync(Guid id)
-    {
-        var response = await _httpClient.GetFromJsonAsync<WorkExperienceModel>($"workExperience/{id}");
-        return response;
+	    try
+	    {
+		    await _httpClient.DeleteAsync($"workExperience/{id}");
+		}
+	    catch (Exception e)
+	    {
+		    Console.WriteLine(e.Message);
+	    }
     }
 
     public async Task UpdateAsync(WorkExperienceModel entity)
     {
-        await _httpClient.PutAsJsonAsync("workExperience", entity);
-
+	    try
+	    {
+		    await _httpClient.PutAsJsonAsync("workExperience", entity);
+		}
+	    catch (Exception e)
+	    {
+		    Console.WriteLine(e.Message);
+	    }
     }
-
 }

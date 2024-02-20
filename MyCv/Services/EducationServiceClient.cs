@@ -16,30 +16,66 @@ public class EducationServiceClient : IEducationService
 
     public async Task<IEnumerable<EducationModel>> GetAllAsync()
     {
-        var response = await _httpClient.GetFromJsonAsync<List<EducationModel>>("/educations");
-        return response;
+	    try
+	    {
+		    var response = await _httpClient.GetFromJsonAsync<List<EducationModel>>("/educations");
+		    return response;
+		}
+	    catch (Exception e)
+	    {
+		    Console.WriteLine(e.Message);
+		    return new List<EducationModel>();
+	    }
     }
 
     public async Task<EducationModel> GetByIdAsync(Guid id)
     {
-        var response = await _httpClient.GetFromJsonAsync<EducationModel>($"educations/{id}");
-        return response;
+	    try
+	    {
+		    var response = await _httpClient.GetFromJsonAsync<EducationModel>($"educations/{id}");
+		    return response;
+		}
+	    catch (Exception e)
+	    {
+		    Console.WriteLine(e.Message);
+		    return new EducationModel();
+	    }
+       
     }
 
     public async Task AddAsync(EducationModel entity)
     {
-        await _httpClient.PostAsJsonAsync("educations", entity);
+	    try
+	    {
+		    await _httpClient.PostAsJsonAsync("educations", entity);
+		}
+	    catch (Exception e)
+	    {
+		    Console.WriteLine(e.Message);
+	    }
     }
 
     public async Task DeleteAsync(Guid id)
     {
-        await _httpClient.DeleteAsync($"educations/{id}");
+	    try
+	    {
+		    await _httpClient.DeleteAsync($"educations/{id}");
+		}
+	    catch (Exception e)
+	    {
+		    Console.WriteLine(e.Message);
+	    }
     }
 
     public async Task UpdateAsync(EducationModel entity)
     {
-        await _httpClient.PutAsJsonAsync("educations", entity);
-       
+	    try
+	    {
+		    await _httpClient.PutAsJsonAsync("educations", entity);
+		}
+	    catch (Exception e)
+	    {
+		    Console.WriteLine(e.Message);
+	    }
     }
-
 }

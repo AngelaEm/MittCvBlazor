@@ -14,29 +14,64 @@ public class SkillServiceClient : ISkillService
 
     public async Task<IEnumerable<SkillModel>> GetAllAsync()
     {
-        var response = await _httpClient.GetFromJsonAsync<List<SkillModel>>("skills");
-        return response;
+	    try
+	    {
+		    var response = await _httpClient.GetFromJsonAsync<List<SkillModel>>("skills");
+		    return response;
+		}
+	    catch (Exception e)
+	    {
+		    Console.WriteLine(e.Message);
+		    return new List<SkillModel>();
+	    }
     }
 
     public async Task<SkillModel> GetByIdAsync(Guid id)
     {
-        var response = await _httpClient.GetFromJsonAsync<SkillModel>($"skills/{id}");
-        return response;
+	    try
+	    {
+		    var response = await _httpClient.GetFromJsonAsync<SkillModel>($"skills/{id}");
+		    return response;
+		}
+	    catch (Exception e)
+	    {
+		    Console.WriteLine(e.Message);
+		    return new SkillModel();
+	    }
     }
 
     public async Task AddAsync(SkillModel entity)
     {
-        await _httpClient.PostAsJsonAsync("skills", entity);
+	    try
+	    {
+		    await _httpClient.PostAsJsonAsync("skills", entity);
+		}
+	    catch (Exception e)
+	    {
+		    Console.WriteLine(e.Message);
+	    }
     }
     public async Task DeleteAsync(Guid id)
     {
-        await _httpClient.DeleteAsync($"skills/{id}");
+	    try
+	    {
+		    await _httpClient.DeleteAsync($"skills/{id}");
+		}
+	    catch (Exception e)
+	    {
+		    Console.WriteLine(e.Message);
+	    }
     }
 
     public async Task UpdateAsync(SkillModel entity)
     {
-        await _httpClient.PutAsJsonAsync("skills", entity);
+	    try
+	    {
+		    await _httpClient.PutAsJsonAsync("skills", entity);
+		}
+	    catch (Exception e)
+	    {
+		    Console.WriteLine(e.Message);
+	    }
     }
-
-   
 }

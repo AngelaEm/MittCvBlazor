@@ -16,7 +16,17 @@ namespace MyCvApi.Services
 
         public async Task<IEnumerable<EducationModel>> GetAllAsync()
         {
-            return await _context.Educations.ToListAsync();
+	        try
+	        {
+		        return await _context.Educations.ToListAsync();
+			}
+	        catch (Exception e)
+	        {
+		        Console.WriteLine(e.Message);
+		        return new List<EducationModel>();
+
+	        }
+            
         }
 
         public async Task AddAsync(EducationModel entity)

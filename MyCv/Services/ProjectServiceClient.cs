@@ -16,32 +16,66 @@ namespace MyCv.Services
 
         public async Task<IEnumerable<ProjectModel>> GetAllAsync()
         {
-            var response = await _httpClient.GetFromJsonAsync<List<ProjectModel>>("projects");
-            return response;
+	        try
+	        {
+		        var response = await _httpClient.GetFromJsonAsync<List<ProjectModel>>("projects");
+		        return response;
+			}
+	        catch (Exception e)
+	        {
+		        Console.WriteLine(e.Message);
+		        return new List<ProjectModel>();
+	        }
         }
 
         public async Task<ProjectModel> GetByIdAsync(Guid id)
         {
-            var response = await _httpClient.GetFromJsonAsync<ProjectModel>($"projects/{id}");
-            return response;
+	        try
+	        {
+		        var response = await _httpClient.GetFromJsonAsync<ProjectModel>($"projects/{id}");
+		        return response;
+			}
+	        catch (Exception e)
+	        {
+		        Console.WriteLine(e.Message);
+		        return new ProjectModel();
+	        }
         }
 
         public async Task AddAsync(ProjectModel entity)
         {
-            await _httpClient.PostAsJsonAsync("projects", entity);
+	        try
+	        {
+		        await _httpClient.PostAsJsonAsync("projects", entity);
+			}
+	        catch (Exception e)
+	        {
+		        Console.WriteLine(e.Message);
+	        }
         }
 
         public async Task DeleteAsync(Guid id)
         {
-            await _httpClient.DeleteAsync($"projects/{id}");
+	        try
+	        {
+		        await _httpClient.DeleteAsync($"projects/{id}");
+			}
+	        catch (Exception e)
+	        {
+		        Console.WriteLine(e.Message);
+	        }
         }
 
         public async Task UpdateAsync(ProjectModel entity)
         {
-            await _httpClient.PutAsJsonAsync("projects", entity);
+	        try
+	        {
+		        await _httpClient.PutAsJsonAsync("projects", entity);
+			}
+	        catch (Exception e)
+	        {
+		        Console.WriteLine(e.Message);
+	        }
         }
-
-       
     }
 }
-

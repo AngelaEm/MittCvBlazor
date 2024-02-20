@@ -2,5 +2,5 @@
 
 public class AdviceModel
 {
-    public AdviceSlip Slip { get; set; }
+	public AdviceSlip? Slip { get; set; } = new();
 }

@@ -8,7 +8,7 @@
 
 
 <NavLink class="custom-link ms-0" href="/">Home</NavLink>
-<NavLink class="custom-link" href="/Account/Manage">Manage Account</NavLink>
+
 <h3>WorkExperience</h3>
 
 <EditForm Model="@newWorkExperience" OnValidSubmit="@HandleValidSubmit" FormName="EducationForm">
@@ -53,65 +53,3 @@
     <button type="button" class="btn btn-danger" @onclick="DeleteWorkExperience">Delete</button>
 
 </EditForm>
-
-@code {
-    private WorkExperienceModel newWorkExperience = new();
-    private List<WorkExperienceModel> workExperience = new();
-
-    protected override async Task OnInitializedAsync() 
-    {
-
-	    workExperience.AddRange(await WorkExperienceService.GetAllAsync());
-    }
-
-    private async Task OnWorkExperienceSelected(ChangeEventArgs e)
-    {
-	    Guid.TryParse(e.Value?.ToString(), out Guid workId);
-    
-	    if (workId == Guid.Empty)
-	    {
-		    newWorkExperience = new WorkExperienceModel();
-	    }
-	    else
-	    {
-		    
-		    newWorkExperience = await WorkExperienceService.GetByIdAsync(workId);
-	    }
-    }
-
-
-    private async Task HandleValidSubmit()
-    {
-       
-	    if (newWorkExperience.Id == Guid.Empty)
-	    {
-		    await WorkExperienceService.AddAsync(newWorkExperience);
-
-	    }
-	    else
-	    {
-		    await WorkExperienceService.UpdateAsync(newWorkExperience);
-            
-	    }
-
-	    workExperience.Clear();
-        workExperience.AddRange(await WorkExperienceService.GetAllAsync());
-	    newWorkExperience = new WorkExperienceModel();
-    }
-
-    
-
-    private async Task DeleteWorkExperience()
-    {
-        if (newWorkExperience != null && newWorkExperience.Id != Guid.Empty)
-	    {
-            await WorkExperienceService.DeleteAsync(newWorkExperience.Id);
-            workExperience.Clear();
-            workExperience.AddRange(await WorkExperienceService.GetAllAsync());
-            newWorkExperience = new WorkExperienceModel();
-
-	    }
-
-    }
-
-}

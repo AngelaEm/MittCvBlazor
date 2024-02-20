@@ -46,8 +46,7 @@ builder.Services.AddScoped<IEducationService, EducationServiceClient>();
 builder.Services.AddScoped<IProjectService, ProjectServiceClient>();
 builder.Services.AddScoped<ISkillService, SkillServiceClient>();
 builder.Services.AddScoped<IWorkExperienceService, WorkExperiensServiceClient>();
-builder.Services.AddScoped<AdviceClient>();
-builder.Services.AddScoped<AdviceModel>();
+
 
 var app = builder.Build();
 
