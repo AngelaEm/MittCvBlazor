@@ -3,12 +3,12 @@ using Common.Models;
 using Microsoft.EntityFrameworkCore;
 using MyCvApi.Data;
 
-namespace MyCvApi.Services
+namespace MyCvApi.Repositories
 {
-    public class SkillDataService : ISkillService
+    public class SkillRepository : ISkillService
     {
         public readonly ApiDbContext _context;
-        public SkillDataService(ApiDbContext context)
+        public SkillRepository(ApiDbContext context)
         {
             _context = context;
         }

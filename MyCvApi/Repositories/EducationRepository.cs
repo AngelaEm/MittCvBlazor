@@ -3,13 +3,13 @@ using Common.Models;
 using Microsoft.EntityFrameworkCore;
 using MyCvApi.Data;
 
-namespace MyCvApi.Services
+namespace MyCvApi.Repositories
 {
-    public class EducationDataService : IEducationService
+    public class EducationRepository : IEducationService
     {
         private readonly ApiDbContext _context;
 
-        public EducationDataService(ApiDbContext context)
+        public EducationRepository(ApiDbContext context)
         {
             _context = context;
         }

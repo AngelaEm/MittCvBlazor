@@ -3,13 +3,13 @@ using Common.Models;
 using Microsoft.EntityFrameworkCore;
 using MyCvApi.Data;
 
-namespace MyCvApi.Services
+namespace MyCvApi.Repositories
 {
-    public class ProjectDataService : IProjectService
+    public class ProjectRepository : IProjectService
     {
         private readonly ApiDbContext _context;
 
-        public ProjectDataService(ApiDbContext context)
+        public ProjectRepository(ApiDbContext context)
         {
             _context = context;
         }

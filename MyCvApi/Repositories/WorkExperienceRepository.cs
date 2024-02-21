@@ -3,13 +3,13 @@ using Common.Models;
 using Microsoft.EntityFrameworkCore;
 using MyCvApi.Data;
 
-namespace MyCvApi.Services
+namespace MyCvApi.Repositories
 {
-    public class WorkExperienceDataService : IWorkExperienceService
+    public class WorkExperienceRepository : IWorkExperienceService
     {
         public readonly ApiDbContext _context;
 
-        public WorkExperienceDataService(ApiDbContext context)
+        public WorkExperienceRepository(ApiDbContext context)
         {
             _context = context;
         }

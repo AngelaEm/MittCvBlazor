@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MyCvApi.Data;
 using Common.Interfaces;
 using Common.Models;
-using MyCvApi.Services;
+using MyCvApi.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,10 +15,10 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApiDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-builder.Services.AddScoped<IEducationService, EducationDataService>();
-builder.Services.AddScoped<IWorkExperienceService, WorkExperienceDataService>();
-builder.Services.AddScoped<IProjectService, ProjectDataService>();
-builder.Services.AddScoped<ISkillService, SkillDataService>();
+builder.Services.AddScoped<IEducationService, EducationRepository>();
+builder.Services.AddScoped<IWorkExperienceService, WorkExperienceRepository>();
+builder.Services.AddScoped<IProjectService, ProjectRepository>();
+builder.Services.AddScoped<ISkillService, SkillRepository>();
 
 
 var app = builder.Build();
