@@ -37,7 +37,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-builder.Services.AddHttpClient("mittApi", client => client.BaseAddress = new Uri("http://localhost:5047"));
+builder.Services.AddHttpClient("mittApi", client => client.BaseAddress = new Uri(""));
 builder.Services.AddHttpClient("adviceApi", client => client.BaseAddress = new Uri("https://api.adviceslip.com"));
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
